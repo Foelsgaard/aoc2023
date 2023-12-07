@@ -25,16 +25,12 @@ fn solve1(input: &[u8]) -> usize {
     }
     parser.skip_whitespace();
 
-    for i in 0..7 {
+    for map in &mut maps {
         let mut map_len = 0;
         parser.skip_line();
-        loop {
-            if let Some([dst, src, rng]) = parser.parse_usize_n() {
-                maps[i][map_len] = [dst, src, rng];
-                map_len += 1;
-            } else {
-                break;
-            }
+        while let Some([dst, src, rng]) = parser.parse_usize_n() {
+            map[map_len] = [dst, src, rng];
+            map_len += 1;
         }
         parser.skip_whitespace();
     }
@@ -70,16 +66,12 @@ fn solve2(input: &[u8]) -> usize {
     }
     parser.skip_whitespace();
 
-    for i in 0..7 {
+    for map in &mut maps {
         let mut map_len = 0;
         parser.skip_line();
-        loop {
-            if let Some([dst, src, rng]) = parser.parse_usize_n() {
-                maps[i][map_len] = [dst, src, rng];
-                map_len += 1;
-            } else {
-                break;
-            }
+        while let Some([dst, src, rng]) = parser.parse_usize_n() {
+            map[map_len] = [dst, src, rng];
+            map_len += 1;
         }
         parser.skip_whitespace();
     }

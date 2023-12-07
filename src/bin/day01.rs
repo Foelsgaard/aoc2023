@@ -1,7 +1,3 @@
-#![cfg_attr(test, feature(test))]
-#[cfg(test)]
-extern crate test;
-
 use aoc2023::read_input;
 
 fn main() {

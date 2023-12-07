@@ -1,8 +1,3 @@
-#![cfg_attr(test, feature(test))]
-
-#[cfg(test)]
-extern crate test;
-
 use std::io::{BufReader, Read};
 use std::{env, fs};
 
@@ -26,7 +21,7 @@ impl<'m> Parser<'m> {
     pub fn parse_digit(&mut self) -> Option<u8> {
         loop {
             let byte = *self.buf.get(self.ix)?;
-            if b'0' <= byte && byte <= b'9' {
+            if (b'0'..=b'9').contains(&byte) {
                 self.ix += 1;
                 return Some(byte);
             } else if is_whitespace(byte) {
@@ -52,7 +47,7 @@ impl<'m> Parser<'m> {
         self.ix
     }
 
-    pub fn next(&mut self) -> Option<u8> {
+    pub fn next_byte(&mut self) -> Option<u8> {
         let byte = *self.buf.get(self.ix)?;
         self.ix += 1;
         Some(byte)
@@ -64,7 +59,7 @@ impl<'m> Parser<'m> {
         let mut number = 0;
         loop {
             let byte = *self.buf.get(end)?;
-            if b'0' <= byte && byte <= b'9' {
+            if (b'0'..=b'9').contains(&byte) {
                 number *= 10;
                 number += (byte - b'0') as usize;
                 is_parsing = true;
@@ -80,8 +75,8 @@ impl<'m> Parser<'m> {
 
     pub fn parse_usize_n<const N: usize>(&mut self) -> Option<[usize; N]> {
         let mut out = [0; N];
-        for i in 0..N {
-            out[i] = self.parse_usize()?;
+        for entry in out.iter_mut().take(N) {
+            *entry = self.parse_usize()?;
         }
 
         Some(out)

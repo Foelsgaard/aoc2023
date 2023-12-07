@@ -50,8 +50,8 @@ fn solve(input: &[u8]) -> (usize, usize) {
                 number *= 10;
                 number += digit;
             } else if parsing_number {
-                for j in 0..winning_numbers_len {
-                    if winning_numbers[j] == number {
+                for winning_number in winning_numbers.iter().take(winning_numbers_len) {
+                    if *winning_number == number {
                         hits += 1;
                         break;
                     }
@@ -86,7 +86,7 @@ fn solve(input: &[u8]) -> (usize, usize) {
 }
 
 fn into_digit(byte: u8) -> Option<u8> {
-    if b'0' <= byte && byte <= b'9' {
+    if (b'0'..=b'9').contains(&byte) {
         Some(byte - b'0')
     } else {
         None

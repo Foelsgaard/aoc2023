@@ -26,8 +26,8 @@ fn solve<const JOKERS: bool>(input: &[u8]) -> usize {
 
     bids[..bids_len].sort_by(|(v0, _), (v1, _)| v0.cmp(v1));
     let mut sum = 0;
-    for i in 0..bids_len {
-        sum += bids[i].1 * (i + 1);
+    for (i, bid) in bids.iter().enumerate().take(bids_len) {
+        sum += bid.1 * (i + 1);
     }
 
     sum
@@ -48,26 +48,24 @@ fn hand_value<const JOKERS: bool>(hand: &[u8]) -> usize {
             6
 
         // full house
-        } else if {
-            jokers == 2 && table[1..].iter().any(|entry| *entry == 2)
-                || jokers == 1 && table[1..].iter().filter(|entry| **entry == 2).count() == 2
-                || jokers == 0
-                    && table[1..].iter().any(|entry| *entry == 3)
-                    && table[1..].iter().any(|entry| *entry == 2)
-        } {
+        } else if jokers == 2 && table[1..].iter().any(|entry| *entry == 2)
+            || jokers == 1 && table[1..].iter().filter(|entry| **entry == 2).count() == 2
+            || jokers == 0
+                && table[1..].iter().any(|entry| *entry == 3)
+                && table[1..].iter().any(|entry| *entry == 2)
+        {
             5
 
         // three of a kind
         } else if table[1..].iter().any(|entry| *entry + jokers == 3) {
             4
         // two pair
-        } else if {
-            jokers == 1 && table[1..].iter().any(|entry| *entry == 2)
-                || jokers == 0 && table[1..].iter().filter(|entry| **entry == 2).count() == 2
-        } {
+        } else if jokers == 1 && table[1..].iter().any(|entry| *entry == 2)
+            || jokers == 0 && table[1..].iter().filter(|entry| **entry == 2).count() == 2
+        {
             3
         // one pair
-        } else if { jokers == 1 || table[1..].iter().filter(|entry| **entry == 2).count() == 1 } {
+        } else if jokers == 1 || table[1..].iter().filter(|entry| **entry == 2).count() == 1 {
             2
         } else {
             1

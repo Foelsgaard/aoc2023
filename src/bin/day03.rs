@@ -42,7 +42,7 @@ fn solve1(input: &[u8]) -> usize {
             if part_number {
                 sum += number;
             }
-        } else if let Some(_) = parser.next() {
+        } else if parser.next_byte().is_some() {
         }
     }
 
