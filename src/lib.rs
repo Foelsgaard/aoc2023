@@ -87,6 +87,26 @@ impl<'m> Parser<'m> {
         Some(out)
     }
 
+    pub fn parse_word(&mut self) -> Option<&'m [u8]> {
+        let start = self.ix;
+        let mut end = self.ix;
+        let mut is_parsing = false;
+        loop {
+            if let Some(&byte) = self.buf.get(end) {
+                if is_whitespace(byte) && is_parsing {
+                    self.ix = end;
+                    return Some(&self.buf[start..end]);
+                } else {
+                    is_parsing = true;
+                }
+            } else {
+                self.ix = self.buf.len();
+                return Some(&self.buf[start..]);
+            }
+            end += 1;
+        }
+    }
+
     pub fn parse_exact(&mut self, tgt: &[u8]) -> Option<&'m [u8]> {
         let start = self.ix;
         let mut i = 0;
