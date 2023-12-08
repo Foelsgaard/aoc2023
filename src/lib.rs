@@ -82,6 +82,13 @@ impl<'m> Parser<'m> {
         Some(out)
     }
 
+    pub fn skip_n(&mut self, n: usize) -> Option<&'m [u8]> {
+        let start = self.ix;
+        let end = start + n;
+        self.ix = end;
+        self.buf.get(start..end)
+    }
+
     pub fn parse_word(&mut self) -> Option<&'m [u8]> {
         let start = self.ix;
         let mut end = self.ix;
