@@ -73,6 +73,17 @@ impl<'m> Parser<'m> {
         }
     }
 
+    pub fn parse_isize(&mut self) -> Option<isize> {
+        self.skip_whitespace()?;
+
+        if let Some(true) = self.peek(|p| Some(p.next_byte()? == b'-')) {
+            self.next_byte()?;
+            Some(-(self.parse_usize()? as isize))
+        } else {
+            Some(self.parse_usize()? as isize)
+        }
+    }
+
     pub fn parse_usize_n<const N: usize>(&mut self) -> Option<[usize; N]> {
         let mut out = [0; N];
         for entry in out.iter_mut().take(N) {
