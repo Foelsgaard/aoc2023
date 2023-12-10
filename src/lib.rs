@@ -1,12 +1,12 @@
 use std::io::{BufReader, Read};
 use std::{env, fs};
 
-pub fn read_input(buf: &mut [u8]) -> &[u8] {
+pub fn read_input(buf: &mut [u8]) -> &mut [u8] {
     let path = env::args().nth(1).unwrap();
     let file = fs::File::open(path).unwrap();
     let mut rdr = BufReader::new(file);
     let n = rdr.read(buf).unwrap();
-    &buf[..n]
+    &mut buf[..n]
 }
 
 pub struct Parser<'m> {
