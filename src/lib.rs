@@ -183,3 +183,30 @@ impl<'m> Parser<'m> {
 fn is_whitespace(byte: u8) -> bool {
     byte == b' ' || byte == b'\n'
 }
+
+pub fn ix2sub(row_len: usize, ix: usize) -> (isize, isize) {
+    let row = (ix / row_len) as isize;
+    let col = (ix % row_len) as isize;
+
+    (row, col)
+}
+
+pub fn sub2ix(row_len: usize, row: isize, col: isize) -> Option<usize> {
+    if row < 0 || row_len <= (col as usize) || col < 0 {
+        return None;
+    }
+    Some((row * (row_len as isize) + col) as usize)
+}
+
+pub fn by_sub<T>(ar: &[T], row_len: usize, row: isize, col: isize) -> Option<(&T, usize)> {
+    sub2ix(row_len, row, col).and_then(|ix| Some((ar.get(ix)?, ix)))
+}
+
+pub fn by_sub_mut<T>(
+    ar: &mut [T],
+    row_len: usize,
+    row: isize,
+    col: isize,
+) -> Option<(&mut T, usize)> {
+    sub2ix(row_len, row, col).and_then(|ix| Some((ar.get_mut(ix)?, ix)))
+}
