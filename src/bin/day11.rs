@@ -1,4 +1,4 @@
-use aoc2023::{by_sub, by_sub_mut, ix2sub, read_input, Parser};
+use aoc2023::{read_input, Grid, Parser};
 
 fn main() {
     let mut buf = vec![0; 0x10000];
@@ -33,17 +33,19 @@ fn solve(input: &mut [u8]) -> (usize, usize) {
         height += 1;
     }
 
+    let mut grid = Grid::new(width, input);
+
     for row in 0..height as isize {
         let mut is_empty = true;
         for col in 0..width as isize {
-            if let Some((entry, _)) = by_sub_mut(input, width, row, col) {
+            if let Some(entry) = grid.get_mut(row, col) {
                 is_empty &= *entry != b'#';
             }
         }
 
         if is_empty {
             for col in 0..width as isize {
-                if let Some((entry, _)) = by_sub_mut(input, width, row, col) {
+                if let Some(entry) = grid.get_mut(row, col) {
                     if *entry != b'\n' {
                         *entry = b'-';
                     }
@@ -55,14 +57,14 @@ fn solve(input: &mut [u8]) -> (usize, usize) {
     for col in 0..width as isize {
         let mut is_empty = true;
         for row in 0..height as isize {
-            if let Some((entry, _)) = by_sub_mut(input, width, row, col) {
+            if let Some(entry) = grid.get_mut(row, col) {
                 is_empty &= *entry != b'#';
             }
         }
 
         if is_empty {
             for row in 0..width as isize {
-                if let Some((entry, _)) = by_sub_mut(input, width, row, col) {
+                if let Some(entry) = grid.get_mut(row, col) {
                     if *entry == b'-' {
                         *entry = b'+';
                     } else if *entry != b'\n' {
@@ -75,16 +77,16 @@ fn solve(input: &mut [u8]) -> (usize, usize) {
 
     let mut sum1 = 0;
     let mut sum2 = 0;
-    for star0 in stars.iter().take(stars_len) {
-        for star1 in stars.iter().take(stars_len) {
-            let (mut r0, mut c0) = ix2sub(width, *star0);
-            let (r1, c1) = ix2sub(width, *star1);
+    for (n, star0) in stars.iter().take(stars_len).enumerate() {
+        for star1 in stars.iter().skip(n + 1).take(stars_len - n - 1) {
+            let (mut r0, mut c0) = grid.sub_of(*star0);
+            let (r1, c1) = grid.sub_of(*star1);
 
             let mut distance0: usize = 0;
             let mut distance1: usize = 0;
             while r0 != r1 {
                 r0 += (r1 - r0).signum();
-                let entry = by_sub(input, width, r0, c0).unwrap().0;
+                let entry = grid.get(r0, c0).unwrap();
                 if *entry == b'-' || *entry == b'+' {
                     distance0 += 2;
                     distance1 += 1000000;
@@ -95,7 +97,7 @@ fn solve(input: &mut [u8]) -> (usize, usize) {
             }
             while c0 != c1 {
                 c0 += (c1 - c0).signum();
-                let entry = by_sub(input, width, r0, c0).unwrap().0;
+                let entry = grid.get(r0, c0).unwrap();
                 if *entry == b'|' || *entry == b'+' {
                     distance0 += 2;
                     distance1 += 1000000;
@@ -110,5 +112,5 @@ fn solve(input: &mut [u8]) -> (usize, usize) {
         }
     }
 
-    (sum1 / 2, sum2 / 2)
+    (sum1, sum2)
 }

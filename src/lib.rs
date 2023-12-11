@@ -184,29 +184,43 @@ fn is_whitespace(byte: u8) -> bool {
     byte == b' ' || byte == b'\n'
 }
 
-pub fn ix2sub(row_len: usize, ix: usize) -> (isize, isize) {
-    let row = (ix / row_len) as isize;
-    let col = (ix % row_len) as isize;
-
-    (row, col)
+pub struct Grid<'m, T> {
+    width: usize,
+    buf: &'m mut [T],
 }
 
-pub fn sub2ix(row_len: usize, row: isize, col: isize) -> Option<usize> {
-    if row < 0 || row_len <= (col as usize) || col < 0 {
-        return None;
+impl<'m, T> Grid<'m, T> {
+    pub fn new(width: usize, buf: &'m mut [T]) -> Self {
+        Self { width, buf }
     }
-    Some((row * (row_len as isize) + col) as usize)
-}
 
-pub fn by_sub<T>(ar: &[T], row_len: usize, row: isize, col: isize) -> Option<(&T, usize)> {
-    sub2ix(row_len, row, col).and_then(|ix| Some((ar.get(ix)?, ix)))
-}
+    pub fn index_of(&self, row: isize, col: isize) -> Option<usize> {
+        if row < 0 || self.width <= (col as usize) || col < 0 {
+            return None;
+        }
+        Some((row * (self.width as isize) + col) as usize)
+    }
 
-pub fn by_sub_mut<T>(
-    ar: &mut [T],
-    row_len: usize,
-    row: isize,
-    col: isize,
-) -> Option<(&mut T, usize)> {
-    sub2ix(row_len, row, col).and_then(|ix| Some((ar.get_mut(ix)?, ix)))
+    pub fn sub_of(&self, ix: usize) -> (isize, isize) {
+        let row = (ix / self.width) as isize;
+        let col = (ix % self.width) as isize;
+
+        (row, col)
+    }
+
+    pub fn get(&self, row: isize, col: isize) -> Option<&T> {
+        self.index_of(row, col).and_then(|ix| self.buf.get(ix))
+    }
+
+    pub fn get_mut(&mut self, row: isize, col: isize) -> Option<&mut T> {
+        self.index_of(row, col).and_then(|ix| self.buf.get_mut(ix))
+    }
+
+    pub fn index(&self, ix: usize) -> Option<&T> {
+        self.buf.get(ix)
+    }
+
+    pub fn index_mut(&mut self, ix: usize) -> Option<&mut T> {
+        self.buf.get_mut(ix)
+    }
 }
